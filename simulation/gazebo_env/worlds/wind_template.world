@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<!--
+  Gazebo World: TurtleBot3 Surface Friction Simulation
+  ======================================================
+  Includes:
+    - Ground plane with configurable surface friction
+    - Sun light
+    - TurtleBot3 Burger robot model
+
+  Friction is parameterized via environment variable SURFACE_FRICTION.
+  Default: 0.2 (moderate friction).
+
+  Usage:
+    export SURFACE_FRICTION=0.3
+    ros2 launch turtlebot_sim turtlebot_sim.launch.py friction:=0.3
+
+  Surface friction in Gazebo is controlled via the <mu> / <mu2> parameters
+  in the <surface> element. mu1 = static, mu2 = tangential.
+  Setting both to the same value gives isotropic friction.
+
+  Disturbance experiment:
+    TRAIN_FRICTION = [0.1, 0.2, 0.3, 0.4, 0.5]
+    VAL_FRICTION   = [0.15, 0.25, 0.35, 0.45, 0.55]
+-->
+<sdf version="1.6">
+  <world name="friction_world">
+
+    <!-- ── Physics ──────────────────────────────────────────────────────── -->
+    <physics name="default_physics" type="ode">
+      <max_step_size>0.002</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>500</real_time_update_rate>
+      <gravity>0 0 -9.81</gravity>
+    </physics>
+
+    <!-- ── Light ─────────────────────────────────────────────────────────── -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- ── Ground plane with configurable friction ──────────────────────── -->
+    <!--
+      To change friction experimentally, modify the <mu> values below.
+      mu = 0.1  →  slippery (ice-like)
+      mu = 0.3  →  moderate (tile floor)
+      mu = 0.6  →  high friction (carpet / rough concrete)
+    -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.2</mu>     <!-- SURFACE_FRICTION: change for experiment -->
+                <mu2>0.2</mu2>
+                <slip1>0.0</slip1>
+                <slip2>0.0</slip2>
+              </ode>
+            </friction>
+            <contact>
+              <ode>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+                <max_vel>0.01</max_vel>
+                <min_depth>0.001</min_depth>
+              </ode>
+            </contact>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <cast_shadows>false</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── TurtleBot3 Burger ─────────────────────────────────────────────── -->
+    <!--
+      Include via the turtlebot3_gazebo package model or spawn via launch.
+      Spawn is handled by the launch file; this model entry is a fallback.
+    -->
+    <include>
+      <uri>model://turtlebot3_burger</uri>
+      <name>turtlebot3</name>
+      <pose>0 0 0.0 0 0 0</pose>
+    </include>
+
+    <!-- ── Scene settings ────────────────────────────────────────────────── -->
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.9 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <!-- ── GUI camera (top-down 2D view for ground robot) ────────────────── -->
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>0 0 12 0 1.5707 0</pose>
+        <view_controller>ortho</view_controller>
+      </camera>
+    </gui>
+
+  </world>
+</sdf>

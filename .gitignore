@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Data (large files — don't commit raw data)
+data/training/*.npy
+data/training/*.csv
+
+# Trained models (optional — use git-lfs if you want to track)
+checkpoints/
+*.pt
+*.pth
+
+# Results (plots, JSON) — optionally keep some
+results/*.png
+results/*.pdf
+# Keep JSON results
+!results/*.json
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# ROS 2 build artifacts
+install/
+log/
+build/

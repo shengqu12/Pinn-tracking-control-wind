@@ -1,0 +1,19 @@
+# Core scientific computing
+numpy>=1.24
+scipy>=1.11
+
+# Deep learning
+torch>=2.0.0
+
+# Visualisation
+matplotlib>=3.7
+
+# Optional: Jupyter
+# jupyter
+# ipykernel
+
+# Optional: ROS 2 Python packages (installed via apt, not pip)
+# rclpy                  → sudo apt install ros-humble-rclpy
+# geometry-msgs          → sudo apt install ros-humble-geometry-msgs
+# transforms3d           → pip install transforms3d
+transforms3d>=0.4
