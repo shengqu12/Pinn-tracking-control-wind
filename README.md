@@ -1,8 +1,8 @@
-# TurtleBot PINN Dynamics & iLQR Control
+# TurtleBot PINN Dynamics & LQR Control
 
 Physics-Informed Neural Network (PINN) for **TurtleBot3 differential drive**
-dynamics learning under surface friction disturbance, combined with an
-iterative LQR (iLQR) controller.
+dynamics learning under surface friction disturbance, combined with a
+Linear Quadratic Regulator (LQR) controller.
 
 Disturbance model: **surface friction coefficient** (mu_lin) — analogous to
 wind speed in the original Cao et al. (2025) UAV formulation.
@@ -51,7 +51,7 @@ project/
 │   ├── loss_functions.py      # PINN loss (data + physics_vel + physics_ang + IC)
 │   └── train_pinn.py          # Sequential training (Step A / Step B alternating)
 ├── controllers/
-│   └── ilqr_controller.py     # iLQR (LM + line search) + LQR baseline
+│   └── lqr_controller.py      # LQR (PINN-based) + AnalyticalLQR + OpenLoop baseline
 ├── simulation/
 │   ├── python_sim.py          # Pure-Python 2D simulation (no Gazebo required)
 │   └── gazebo_env/            # ROS 2 + Gazebo TurtleBot3 simulation package
@@ -189,8 +189,8 @@ python training/train_pinn.py \
 | `loss_functions.py` | `L_data + L_physics_vel + L_physics_ang + L_IC` |
 | `pinn_dynamics.py` | History-conditioned MLP, Jacobian via autograd |
 | `train_pinn.py` | Alternating Step A/B training (Cao et al. eq. 15-17) |
-| `ilqr_controller.py` | iLQR with Levenberg-Marquardt + backtracking line search |
-| `exp1_generalization.py` | MPC_Physics / BLNN_LQR / PINN_LQR / PINN_iLQR comparison |
+| `lqr_controller.py` | LQR (PINN Jacobians) + AnalyticalLQR + OpenLoop |
+| `exp1_generalization.py` | Open_loop / LQR_physics / PINN_LQR comparison |
 
 ---
 
@@ -219,6 +219,5 @@ The angular friction is set as `mu_ang = 0.5 * mu_lin` throughout.
 ## Notes
 
 - **Training sequence**: Start with small physics weights (`0.01`) and increase gradually
-- **iLQR LM init**: `lambda=1.0`, auto-adjusted per Algorithm 1
 - **Gazebo TurtleBot3**: Uses `TURTLEBOT3_MODEL=burger`; tested with ROS 2 Humble
 - **Data topics**: `/odom` for state, `/cmd_vel` for control commands

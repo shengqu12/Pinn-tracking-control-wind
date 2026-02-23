@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  gazebo_sim:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pinn_gazebo_sim
+    ports:
+      - "6080:6080"   # noVNC (브라우저로 접속)
+      - "5900:5900"   # VNC (네이티브 VNC 클라이언트)
+    environment:
+      - DISPLAY=:99
+      - TURTLEBOT3_MODEL=burger
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - GALLIUM_DRIVER=softpipe
+      - MESA_GL_VERSION_OVERRIDE=3.3
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./data:/workspace/data         # 수집 데이터 저장
+      - ./results:/workspace/results   # 결과 플롯 저장
+    privileged: true      # GPU/display 접근에 필요
+    shm_size: "2gb"       # Gazebo 공유 메모리
+    stdin_open: true
+    tty: true

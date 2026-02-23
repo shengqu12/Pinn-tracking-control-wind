@@ -7,7 +7,7 @@ controller validation without Gazebo.
 Usage
 -----
 from simulation.python_sim import run_simulation
-from controllers.ilqr_controller import ILQRController
+from controllers.lqr_controller import LQRController
 import numpy as np
 
 results = run_simulation(controller, trajectory, friction_params={"mu_lin": 0.3})
@@ -24,6 +24,7 @@ from scipy.integrate import solve_ivp
 from typing import Dict, Optional, Callable
 
 from models.turtlebot_physics import dynamics, cruise_trim, DEFAULT_PARAMS
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -110,14 +111,14 @@ def run_simulation(
     x0:              Optional[np.ndarray] = None,
     dt:              float = 0.02,
     params:          dict  = None,
-    ctrl_type:       str   = "ilqr",    # "ilqr" | "lqr"
+    ctrl_type:       str   = "lqr",    # "lqr" | default
 ) -> Dict[str, np.ndarray]:
     """
     Simulate TurtleBot under the given controller and surface friction.
 
     Parameters
     ----------
-    controller      : controller object with .solve() (iLQR) or .control() (LQR)
+    controller      : controller object with .control() (LQR)
     trajectory      : (T, 5) reference state sequence
     friction_params : {'mu_lin', 'mu_ang'} surface friction (the disturbance)
     x0              : (5,) initial state (uses trajectory[0] if None)
@@ -150,20 +151,8 @@ def run_simulation(
 
         # ── compute control ───────────────────────────────────────────────────
         try:
-            if ctrl_type == "ilqr":
-                horizon_end = min(i + controller.N + 1, T)
-                ref_seg     = trajectory[i:horizon_end]
-                if len(ref_seg) < controller.N + 1:
-                    ref_seg = np.vstack([
-                        ref_seg,
-                        np.tile(ref_seg[-1], (controller.N + 1 - len(ref_seg), 1))
-                    ])
-                U_opt, _, _ = controller.solve(x_curr, ref_seg)
-                u_curr = U_opt[0]
-
-            elif ctrl_type == "lqr":
+            if ctrl_type == "lqr":
                 u_curr = controller.control(x_curr, x_ref)
-
             else:
                 u_curr = u_trim
 

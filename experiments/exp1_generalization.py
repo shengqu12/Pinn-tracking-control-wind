@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from models.turtlebot_physics     import cruise_trim, DEFAULT_PARAMS
 from models.pinn_dynamics          import PINNDynamics
-from controllers.ilqr_controller   import (
+from controllers.lqr_controller    import (
     LQRController, AnalyticalLQRController, OpenLoopController, NX, NU
 )
 from simulation.python_sim         import run_simulation, circular_trajectory

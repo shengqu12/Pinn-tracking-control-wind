@@ -246,7 +246,7 @@ class PINNDynamics(nn.Module):
 
         return self.forward(x_t, u_t, x_t1, u_t1, x_t2, u_t2, dt=dt)
 
-    # ── Jacobians for LQR / iLQR linearization ───────────────────────────────
+    # ── Jacobians for LQR linearization ──────────────────────────────────────
     def get_jacobian(
         self,
         x: torch.Tensor,
